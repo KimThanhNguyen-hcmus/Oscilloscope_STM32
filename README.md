@@ -3,7 +3,7 @@
 ![C](https://img.shields.io/badge/Language-C-blue.svg)
 ![Build](https://img.shields.io/badge/Build-Make-orange.svg)
 ![MCU](https://img.shields.io/badge/MCU-STM32F108-green.svg)
-![MCU](https://img.shields.io/badge/MCU-ESP32-32S-green.svg)
+![MCU](https://img.shields.io/badge/MCU-ESP32-red.svg)
 ![Status](https://img.shields.io/badge/Status-Active_Learning-success.svg)
 
 ## Documents
@@ -11,10 +11,9 @@
 | Files                  | Description                                                                             |
 | ---------------------- | --------------------------------------------------------------------------------------- |
 | [README.md](README.md) | Main project overview, hardware information, firmware features, and operating principle |
-| [Build](./Build/)      | Contains files.o, .elf, .map                                                            |
-| [Inc](./Inc/)          | Header files, register maps, macros                                                     |
-| [Src](./Src/)          | Source C files (main.c, peripheral drivers)                                             |
-| [Gui](./Gui/)          | Includes GUI using Python                                                               |
+| [Atilum](./Atilum/)    | Contains PCB schematic                                                                  |
+| [ESP32](./ESP32/)      | Contains related ESP32 files and folders                                                |
+| [STM32](./STM32/)      | Contains related STM32 files and folders                                                |
 
 ## Project Overview
 
