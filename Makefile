@@ -16,7 +16,7 @@ LDFLAGS = $(MCU) -T$(LDSCRIPT) -nostdlib -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--c
 C_SOURCES = $(wildcard Src/*.c)
 OBJECTS = $(patsubst Src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
-# 1. Link file.o to file.elf
+
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | $(BUILD_DIR)
 		$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 		$(SZ) $@
