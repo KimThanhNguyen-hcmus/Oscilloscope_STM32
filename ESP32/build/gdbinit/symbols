@@ -18,8 +18,8 @@ end
 
 # Load bootloader symbols
 set confirm off
-    add-symbol-file C:/esp/OSCILLOSCOPE/Recieved/build/bootloader/bootloader.elf
+    add-symbol-file C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader/bootloader.elf
 set confirm on
 
 # Load application symbols
-file C:/esp/OSCILLOSCOPE/Recieved/build/Recieved.elf
+file C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/Recieved.elf

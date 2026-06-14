@@ -1,4 +1,4 @@
-/* * Data converted from C:/esp/OSCILLOSCOPE/Recieved/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

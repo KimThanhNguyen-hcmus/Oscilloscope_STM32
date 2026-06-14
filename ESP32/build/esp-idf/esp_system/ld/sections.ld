@@ -1,6 +1,6 @@
 /* Automatically generated file; DO NOT EDIT */
 /* Espressif IoT Development Framework Linker Script */
-/* Generated from: C:\esp\OSCILLOSCOPE\Recieved\build\esp-idf\esp_system\ld\sections.ld.in */
+/* Generated from: C:\Users\Admin\Documents\Work and pain\FPT\Oscilloscope_STM32\ESP32\build\esp-idf\esp_system\ld\sections.ld.in */
 
 /*
 

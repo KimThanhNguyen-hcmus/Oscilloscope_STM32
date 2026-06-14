@@ -1,4 +1,4 @@
-# Install script for directory: C:/esp/OSCILLOSCOPE/Recieved/main
+# Install script for directory: C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

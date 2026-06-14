@@ -22,4 +22,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file C:/esp/OSCILLOSCOPE/Recieved/build/bootloader/bootloader.elf
+file C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader/bootloader.elf

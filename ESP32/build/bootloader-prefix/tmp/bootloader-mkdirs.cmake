@@ -10,18 +10,18 @@ if(NOT EXISTS "C:/Espressif/frameworks/esp-idf-v5.4.2/components/bootloader/subp
   file(MAKE_DIRECTORY "C:/Espressif/frameworks/esp-idf-v5.4.2/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader"
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix"
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/tmp"
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/src/bootloader-stamp"
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/src"
-  "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/tmp"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/src"
+  "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/esp/OSCILLOSCOPE/Recieved/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

@@ -1,2 +1,2 @@
-source C:/esp/OSCILLOSCOPE/Recieved/build/bootloader/gdbinit/symbols
-source C:/esp/OSCILLOSCOPE/Recieved/build/bootloader/gdbinit/connect
+source C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader/gdbinit/symbols
+source C:/Users/Admin/Documents/Work and pain/FPT/Oscilloscope_STM32/ESP32/build/bootloader/gdbinit/connect

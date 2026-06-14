@@ -1,0 +1,192 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:6276
+load:0x40078000,len:15736
+load:0x40080400,len:4
+load:0x40080404,len:3860
+entry 0x4008063c
+[0;32mI (29) boot: ESP-IDF v5.4.2 2nd stage bootloader[0m
+[0;32mI (29) boot: compile time Jun  3 2026 17:56:08[0m
+[0;32mI (30) boot: Multicore bootloader[0m
+[0;32mI (31) boot: chip revision: v3.0[0m
+[0;32mI (34) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (37) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (41) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (44) boot: Enabling RNG early entropy source...[0m
+[0;32mI (49) boot: Partition Table:[0m
+[0;32mI (51) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (58) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (64) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (71) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (77) boot: End of partition table[0m
+[0;32mI (81) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=0be14h ( 48660) map[0m
+[0;32mI (105) esp_image: segment 1: paddr=0001be3c vaddr=3ff80000 size=0001ch (    28) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=0001be60 vaddr=3ffb0000 size=023e8h (  9192) load[0m
+[0;32mI (112) esp_image: segment 3: paddr=0001e250 vaddr=40080000 size=01dc8h (  7624) load[0m
+[0;32mI (119) esp_image: segment 4: paddr=00020020 vaddr=400d0020 size=18a88h (101000) map[0m
+[0;32mI (158) esp_image: segment 5: paddr=00038ab0 vaddr=40081dc8 size=0c3e4h ( 50148) load[0m
+[0;32mI (185) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (185) boot: Disabling RNG early entropy source...[0m
+[0;32mI (195) cpu_start: Multicore app[0m
+[0;32mI (204) cpu_start: Pro cpu start user code[0m
+[0;32mI (204) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (204) app_init: Application information:[0m
+[0;32mI (204) app_init: Project name:     Recieved[0m
+[0;32mI (208) app_init: App version:      27537b6-dirty[0m
+[0;32mI (212) app_init: Compile time:     Jun  3 2026 17:47:28[0m
+[0;32mI (217) app_init: ELF file SHA256:  eacddf99a...[0m
+[0;32mI (222) app_init: ESP-IDF:          v5.4.2[0m
+[0;32mI (225) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (229) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (233) efuse_init: Chip rev:         v3.0[0m
+[0;32mI (237) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (243) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (248) heap_init: At 3FFB40D0 len 0002BF30 (175 KiB): DRAM[0m
+[0;32mI (254) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (259) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (265) heap_init: At 4008E1AC len 00011E54 (71 KiB): IRAM[0m
+[0;32mI (271) spi_flash: detected chip: generic[0m
+[0;32mI (273) spi_flash: flash io: dio[0m
+[0;33mW (276) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (289) main_task: Started on CPU0[0m
+[0;32mI (299) main_task: Calling app_main()[0m
+[0;32mI (299) uart: queue free spaces: 10[0m
+ADC Values: 2068 -> 0 
+ADC Values: 2111 -> 0 
+ADC Values: 2062 -> 0 
+ADC Values: 2062 -> 0 
+ADC Values: 2063 -> 0 
+ADC Values: 2123 -> 0 
+ADC Values: 2031 -> 0 
+ADC Values: 2108 -> 0 
+ADC Values: 2002 -> 0 
+ADC Values: 2047 -> 0 
+ADC Values: 2059 -> 0 
+ADC Values: 2067 -> 0 
+ADC Values: 2060 -> 0 
+ADC Values: 2202 -> 0 
+ADC Values: 2111 -> 0 
+ADC Values: 2091 -> 0 
+ADC Values: 2090 -> 0 
+ADC Values: 2106 -> 0 
+ADC Values: 2051 -> 0 
+ADC Values: 2075 -> 0 
+ADC Values: 2107 -> 0 
+ADC Values: 2077 -> 0 
+ADC Values: 2077 -> 0 
+ADC Values: 2048 -> 0 
+ADC Values: 2055 -> 0 
+ADC Values: 2087 -> 0 
+ADC Values: 2051 -> 0 
+ADC Values: 2140 -> 0 
+ADC Values: 2236 -> 0 
+ADC Values: 2022 -> 0 
+ADC Values: 2086 -> 0 
+ADC Values: 2077 -> 0 
+ADC Values: 2145 -> 0 
+ADC Values: 2149 -> 0 
+ADC Values: 2160 -> 0 
+ADC Values: 2039 -> 0 
+ADC Values: 2039 -> 0 
+ADC Values: 2068 -> 0 
+ADC Values: 2040 -> 0 
+ADC Values: 2090 -> 0 
+ADC Values: 2095 -> 0 
+ADC Values: 2026 -> 0 
+ADC Values: 2090 -> 0 
+ADC Values: 2039 -> 0 
+ADC Values: 2046 -> 0 
+ADC Values: 2228 -> 0 
+ADC Values: 2087 -> 0 
+ADC Values: 2078 -> 0 
+ADC Values: 2138 -> 0 
+ADC Values: 2031 -> 0 
+ADC Values: 2046 -> 0 
+ADC Values: 2010 -> 0 
+ADC Values: 2010 -> 0 
+ADC Values: 2212 -> 0 
+ADC Values: 2039 -> 0 
+ADC Values: 2102 -> 0 
+ADC Values: 2202 -> 0 
+ADC Values: 2138 -> 0 
+ADC Values: 2151 -> 0 
+ADC Values: 2068 -> 0 
+ADC Values: 2071 -> 0 
+ADC Values: 2122 -> 0 
+ADC Values: 2194 -> 0 
+ADC Values: 2066 -> 0 
+ADC Values: 2061 -> 0 
+ADC Values: 2048 -> 0 
+ADC Values: 2054 -> 0 
+ADC Values: 2052 -> 0 
+ADC Values: 2042 -> 0 
+ADC Values: 2061 -> 0 
+ADC Values: 2067 -> 0 
+ADC Values: 2052 -> 0 
+ADC Values: 2038 -> 0 
+ADC Values: 2157 -> 0 
+ADC Values: 2109 -> 0 
+ADC Values: 2138 -> 0 
+ADC Values: 2190 -> 0 
+ADC Values: 2112 -> 0 
+ADC Values: 2128 -> 0 
+ADC Values: 2211 -> 0 
+ADC Values: 2081 -> 0 
+ADC Values: 2103 -> 0 
+ADC Values: 2054 -> 0 
+ADC Values: 2052 -> 0 
+ADC Values: 2074 -> 0 
+ADC Values: 2098 -> 0 
+ADC Values: 2058 -> 0 
+ADC Values: 2048 -> 0 
+ADC Values: 2043 -> 0 
+ADC Values: 2081 -> 0 
+ADC Values: 2064 -> 0 
+ADC Values: 2062 -> 0 
+ADC Values: 2112 -> 0 
+ADC Values: 2042 -> 0 
+ADC Values: 2126 -> 0 
+ADC Values: 2056 -> 0 
+ADC Values: 2197 -> 0 
+ADC Values: 2092 -> 0 
+ADC Values: 2080 -> 0 
+ADC Values: 2142 -> 0 
+ADC Values: 2094 -> 0 
+ADC Values: 2055 -> 0 
+ADC Values: 2063 -> 0 
+ADC Values: 2110 -> 0 
+ADC Values: 2133 -> 0 
+ADC Values: 2144 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 4095 -> 0 
+ADC Values: 2183 -> 0 
+ADC Values: 2088 -> 0 
+ADC Values: 2166 -> 0 
+ADC Values: 2213 -> 0 
+ADC Values: 2223 -> 0 
+ADC Values: 2057 -> 0 
+ADC Values: 2152 -> 0 
+ADC Values: 2134 -> 0 
+ADC Values: 2144 -> 0 
+ADC Values: 2068 -> 0 
