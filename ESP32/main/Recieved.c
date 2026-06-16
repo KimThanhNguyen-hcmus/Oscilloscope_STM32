@@ -10,6 +10,7 @@
 #include "esp_netif.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
+#include "esp_http_server.h"
 
 #define UART_NUM UART_NUM_2
 #define BUF_SIZE (1024 * 2)
@@ -19,7 +20,7 @@
 #define PASSWORD "01684306403"
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT BIT1
-
+#define TAG "WEBSERVER"
 uint8_t data[2050];
 uint8_t oled_buffer[1024];
 uint16_t adc_val[1024];
@@ -95,6 +96,10 @@ const uint8_t font5x7[][5] = {
 };
 float x_buffer[N] = {0};
 int buffer_index = 0;
+extern const uint8_t index_html_start[] asm("_binary_index_html_start");
+extern const uint8_t index_html_end[] asm("_binary_index_html_end");
+static httpd_handle_t global_server = NULL;
+static int current_ws_fd = 1;
 
 void I2C_Config()
 {
@@ -385,19 +390,12 @@ void wifi_init_sta(void)
     }
 }
 
-static const httpd_uri_t ws = {
-    .uri = "/ws",
-    .method = HTTP_GET,
-    .handler = echo_handler,
-    .user_ctx = NULL,
-    .is_websocket = true};
-
 struct async_resp_arg
 {
-    http_handle_t hd;
+    httpd_handle_t hd;
     int fd;
     uint16_t *data_ptr;
-}
+};
 
 static void
 ws_async_send(void *arg)
@@ -413,22 +411,46 @@ ws_async_send(void *arg)
     free(resp_arg);
 }
 
-static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
+static esp_err_t trigger_async_send(uint16_t *data_to_send)
 {
+    if (global_server == NULL || current_ws_fd == -1)
+    {
+        return ESP_FAIL;
+    }
     struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
     if (resp_arg == NULL)
     {
         return ESP_ERR_NO_MEM;
     }
-    resp_arg->hd = req->handle;
-    resp_arg->fd = httpd_req_to_sockfd(req);
-    esp_err_t ret = httpd_queue_work(handle, ws_async_send, resp_arg);
+    resp_arg->hd = global_server;
+    resp_arg->fd = current_ws_fd;
+    resp_arg->data_ptr = data_to_send;
+    esp_err_t ret = httpd_queue_work(global_server, ws_async_send, resp_arg);
     if (ret != ESP_OK)
     {
         free(resp_arg);
     }
     return ret;
 }
+
+static esp_err_t get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "text/html");
+    size_t index_html_len = index_html_end - index_html_start;
+    return httpd_resp_send(req, (const char *)index_html_start, index_html_len);
+}
+
+static esp_err_t ws_handler(httpd_req_t *req)
+{
+    if (req->method == HTTP_GET)
+    {
+        ESP_LOGI("WEB", "Web connected !!!");
+        current_ws_fd = httpd_req_to_sockfd(req);
+    }
+    return ESP_OK;
+}
+static const httpd_uri_t root = {.uri = "/", .method = HTTP_GET, .handler = get_handler, .user_ctx = NULL};
+static const httpd_uri_t ws = {.uri = "/ws", .method = HTTP_GET, .handler = ws_handler, .user_ctx = NULL, .is_websocket = true};
 
 static httpd_handle_t start_webserver(void)
 {
@@ -441,8 +463,9 @@ static httpd_handle_t start_webserver(void)
     {
         // Registering the ws handler
         ESP_LOGI(TAG, "Registering URI handlers");
+        httpd_register_uri_handler(server, &root);
         httpd_register_uri_handler(server, &ws);
-        httpd_register_uri_handler(server, &ws_auth);
+        global_server = server;
         return server;
     }
 
@@ -465,8 +488,11 @@ void app_main(void)
     OLED_Init();
     OLED_Clear();
     OLED_Update();
+    wifi_init_sta();
+    start_webserver();
     while (1)
     {
         USART_Recieved();
+        trigger_async_send(adc_val);
     }
 }
