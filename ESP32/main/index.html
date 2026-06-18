@@ -109,20 +109,20 @@
 </head>
 
 <body>
-    <h1>Hệ Thống Đo Lường Xung Nhịp</h1>
+    <h1>HomeMade Oscilloscope</h1>
 
     <div class="dashboard-container">
         <div class="stats-container">
             <div class="stat-card">
-                <div class="stat-title">Đỉnh Trên (VMAX)</div>
+                <div class="stat-title">VMAX</div>
                 <div class="stat-value val-max" id="vmax">0.00V</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Đỉnh Dưới (VMIN)</div>
+                <div class="stat-title">VMIN</div>
                 <div class="stat-value val-min" id="vmin">0.00V</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Tốc Độ (FPS)</div>
+                <div class="stat-title">FPS</div>
                 <div class="stat-value val-fps" id="fps">0</div>
             </div>
         </div>
@@ -146,11 +146,11 @@
         let websocket;
 
         function initWebSocket() {
-            console.log('Đang kết nối WebSocket...');
+            console.log('Connecting to WebSocket...');
             websocket = new WebSocket(gateway);
             websocket.binaryType = "arraybuffer";
 
-            websocket.onopen = () => console.log('Đã kết nối WebSocket');
+            websocket.onopen = () => console.log('WebSocket Connected');
             websocket.onclose = () => setTimeout(initWebSocket, 2000);
 
             websocket.onmessage = (event) => {
