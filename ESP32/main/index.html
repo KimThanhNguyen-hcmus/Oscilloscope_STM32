@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Real-time Oscilloscope</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --panel-bg: #1f2833;
+            --neon-cyan: #66fcf1;
+            --neon-blue: #45a29e;
+            --neon-pink: #ff007f;
+            --text-color: #c5c6c7;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, #1a1c24 0%, #0b0c10 100%);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 30px 20px;
+            overflow-x: hidden;
+        }
+        h1 {
+            font-size: 2.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-blue);
+            margin-bottom: 40px;
+        }
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: rgba(31, 40, 51, 0.6);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px 40px;
+            min-width: 160px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(102, 252, 241, 0.3);
+        }
+
+        .stat-title {
+            font-size: 1.1rem;
+            color: #8a90a5;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            font-family: monospace;
+        }
+        .val-max {
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+        }
+
+        .val-min {
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(69, 162, 158, 0.6);
+        }
+
+        .val-fps {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px rgba(102, 252, 241, 0.6);
+        }
+        .canvas-wrapper {
+            position: relative;
+            padding: 5px;
+            background: linear-gradient(135deg, rgba(31, 40, 51, 1) 0%, rgba(11, 12, 16, 1) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 252, 241, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(102, 252, 241, 0.1);
+        }
+
+        canvas {
+            background-color: #050508;
+            border-radius: 8px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hệ Thống Đo Lường Xung Nhịp</h1>
+
+    <div class="dashboard-container">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-title">Đỉnh Trên (VMAX)</div>
+                <div class="stat-value val-max" id="vmax">0.00V</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Đỉnh Dưới (VMIN)</div>
+                <div class="stat-value val-min" id="vmin">0.00V</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Tốc Độ (FPS)</div>
+                <div class="stat-value val-fps" id="fps">0</div>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="scopeCanvas" width="1024" height="400"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('scopeCanvas');
+        const ctx = canvas.getContext('2d');
+        const vmaxEl = document.getElementById('vmax');
+        const vminEl = document.getElementById('vmin');
+        const fpsEl = document.getElementById('fps');
+
+        let frames = 0;
+        setInterval(() => { fpsEl.innerText = `${frames}`; frames = 0; }, 1000);
+
+        const gateway = `ws://${window.location.hostname}/ws`;
+        let websocket;
+
+        function initWebSocket() {
+            console.log('Đang kết nối WebSocket...');
+            websocket = new WebSocket(gateway);
+            websocket.binaryType = "arraybuffer";
+
+            websocket.onopen = () => console.log('Đã kết nối WebSocket');
+            websocket.onclose = () => setTimeout(initWebSocket, 2000);
+
+            websocket.onmessage = (event) => {
+                frames++;
+                const adc_val = new Uint16Array(event.data);
+                drawWaveform(adc_val);
+            };
+        }
+
+        function drawWaveform(data) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(69, 162, 158, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.shadowBlur = 0; 
+            ctx.beginPath();
+            for (let i = 0; i < canvas.width; i += 64) { ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); }
+            for (let i = 0; i < canvas.height; i += 50) { ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); }
+            ctx.stroke();
+
+            ctx.strokeStyle = '#66fcf1'; 
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#66fcf1'; 
+            ctx.lineJoin = 'round'; 
+            ctx.beginPath();
+
+            let raw_max = 0, raw_min = 4095;
+
+            for (let i = 0; i < data.length; i++) {
+                let val = data[i];
+                if (val > raw_max) raw_max = val;
+                if (val < raw_min) raw_min = val;
+
+                let x = i;
+                let y = 400 - (val * 400 / 4095);
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            vmaxEl.innerText = `${(raw_max * 3.3 / 4095).toFixed(2)}V`;
+            vminEl.innerText = `${(raw_min * 3.3 / 4095).toFixed(2)}V`;
+        }
+
+        window.onload = initWebSocket;
+    </script>
+</body>
+
+</html>
