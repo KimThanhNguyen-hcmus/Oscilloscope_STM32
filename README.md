@@ -38,8 +38,8 @@ To build this project, you will need a cross-compilation toolchain and build too
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/HotIveTea/Oscilloscope_STM32](https://github.com/HotIveTea/Oscilloscope_STM32)
-   cd Command_Car
+   git clone https://github.com/KimThanhNguyen-hcmus/Oscilloscope_STM32.git
+   cd Oscilloscope_STM32
    ```
 2. Build the project:
    ```bash
@@ -65,7 +65,7 @@ I document my daily progress, bugs encountered, and architectural concepts learn
 I also document my daily progress, bugs and approachs about RTOS in Notion.
 [RTOS from scratch](https://www.notion.so/RTOS-from-scratch-English-ver-33b984656d2c806c9579eb40ed18872a?source=copy_link)
 
-<h3>📫 Contact Me</h3>
+<h3>Contact Me</h3>
 
 <p>
   <a href="https://github.com/HotIveTea">
