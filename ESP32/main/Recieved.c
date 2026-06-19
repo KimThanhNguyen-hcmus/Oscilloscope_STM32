@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/uart.h"
@@ -284,34 +285,33 @@ void USART_Config()
     QueueHandle_t uart_queue;
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM, BUF_SIZE, BUF_SIZE, 10, &uart_queue, 0));
 }
-void USART_Recieved()
+bool USART_Recieved()
 {
     uint8_t rx_byte;
+
     int len = uart_read_bytes(UART_NUM, &rx_byte, 1, 100 / portTICK_PERIOD_MS);
     if (len > 0 && rx_byte == 0xAA)
     {
+
         len = uart_read_bytes(UART_NUM, &rx_byte, 1, 10 / portTICK_PERIOD_MS);
         if (len > 0 && rx_byte == 0x55)
         {
+
             int data_len = uart_read_bytes(UART_NUM, data, 2048, 500 / portTICK_PERIOD_MS);
             if (data_len == 2048)
             {
                 int adc_idx = 0;
                 for (int k = 0; k < 2048; k += 2)
                 {
-                    uint8_t high_byte = data[k];
+                    uint8_t high_byte = data[k] & 0x0F;
                     uint8_t low_byte = data[k + 1];
-                    high_byte = high_byte & 0x0F;
                     adc_val[adc_idx] = (high_byte << 8) | low_byte;
                     adc_idx++;
                 }
-                // for (int i = 0; i < 2048; i += 2)
-                // {
-                //     float filter = Firfilter((float)adc_val[i]);
-                //     adc_val[i] = (uint16_t)filter;
-                // }
+
                 printf("ADC Values: %d -> %d \n", adc_val[0], adc_val[1023]);
-                OLED_DrawWaveForm();
+
+                return true;
             }
             else
             {
@@ -319,7 +319,8 @@ void USART_Recieved()
             }
         }
     }
-    vTaskDelay(1 / portTICK_PERIOD_MS);
+
+    return false;
 }
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -471,7 +472,34 @@ static httpd_handle_t start_webserver(void)
     ESP_LOGI(TAG, "Error starting server!");
     return NULL;
 }
+// Schedule
+void uart_processing_task(void *pvParameters)
+{
+    int frame_count = 0;
+    TickType_t last_time = xTaskGetTickCount();
+    while (1)
+    {
 
+        bool is_frame_ready = USART_Recieved();
+        if (is_frame_ready == true)
+        {
+
+            trigger_async_send(adc_val);
+            OLED_DrawWaveForm();
+
+            frame_count++;
+            TickType_t current_time = xTaskGetTickCount();
+
+            if (current_time - last_time >= pdMS_TO_TICKS(1000))
+            {
+                ESP_LOGI("FPS_TEST", "Toc do nhan & gui: %d khung hinh/giay", frame_count);
+                frame_count = 0;
+                last_time = current_time;
+            }
+            vTaskDelay(pdMS_TO_TICKS(5));
+        }
+    }
+}
 void app_main(void)
 {
     esp_err_t ret = nvs_flash_init();
@@ -484,16 +512,18 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     wifi_init_sta();
+    start_webserver();
     USART_Config();
     I2C_Config();
     OLED_Init();
     OLED_Clear();
     OLED_Update();
-    start_webserver();
-    while (1)
-    {
-        USART_Recieved();
-        trigger_async_send(adc_val);
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
+    xTaskCreatePinnedToCore(
+        uart_processing_task,
+        "USART_Task",
+        4096,
+        NULL,
+        5,
+        NULL,
+        1);
 }
