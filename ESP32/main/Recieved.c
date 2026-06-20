@@ -5,14 +5,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/uart.h"
-#include "driver/i2c_master.h"
-#include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
 #include "esp_http_server.h"
-
+#include "oled.h"
+#include "usart.h"
 #define UART_NUM UART_NUM_2
 #define BUF_SIZE (1024 * 2)
 #define DATA_LENGTH 1024
@@ -23,9 +22,7 @@
 #define WIFI_FAIL_BIT BIT1
 #define TAG "WEBSERVER"
 uint8_t data[2050];
-uint8_t oled_buffer[1024];
 uint16_t adc_val[1024];
-i2c_master_dev_handle_t oled_handle;
 
 static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_num = 0;
@@ -34,67 +31,6 @@ float b[N] = {
     0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
     0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625};
 
-const uint8_t font5x7[][5] = {
-    {0x00, 0x00, 0x00, 0x00, 0x00}, // Space (0x20)
-    {0x00, 0x00, 0x5f, 0x00, 0x00}, // !
-    {0x00, 0x07, 0x00, 0x07, 0x00}, // "
-    {0x14, 0x7f, 0x14, 0x7f, 0x14}, // #
-    {0x24, 0x2a, 0x7f, 0x2a, 0x12}, // $
-    {0x23, 0x13, 0x08, 0x64, 0x62}, // %
-    {0x36, 0x49, 0x55, 0x22, 0x50}, // &
-    {0x00, 0x05, 0x03, 0x00, 0x00}, // '
-    {0x00, 0x1c, 0x22, 0x41, 0x00}, // (
-    {0x00, 0x41, 0x22, 0x1c, 0x00}, // )
-    {0x14, 0x08, 0x3e, 0x08, 0x14}, // *
-    {0x08, 0x08, 0x3e, 0x08, 0x08}, // +
-    {0x00, 0x50, 0x30, 0x00, 0x00}, // ,
-    {0x08, 0x08, 0x08, 0x08, 0x08}, // -
-    {0x00, 0x60, 0x60, 0x00, 0x00}, // .
-    {0x20, 0x10, 0x08, 0x04, 0x02}, // /
-    {0x3e, 0x51, 0x49, 0x45, 0x3e}, // 0 (0x30)
-    {0x00, 0x42, 0x7f, 0x40, 0x00}, // 1
-    {0x42, 0x61, 0x51, 0x49, 0x46}, // 2
-    {0x21, 0x41, 0x45, 0x4b, 0x31}, // 3
-    {0x18, 0x14, 0x12, 0x7f, 0x10}, // 4
-    {0x27, 0x45, 0x45, 0x45, 0x39}, // 5
-    {0x3c, 0x4a, 0x49, 0x49, 0x30}, // 6
-    {0x01, 0x71, 0x09, 0x05, 0x03}, // 7
-    {0x36, 0x49, 0x49, 0x49, 0x36}, // 8
-    {0x06, 0x49, 0x49, 0x29, 0x1e}, // 9
-    {0x00, 0x36, 0x36, 0x00, 0x00}, // :
-    {0x00, 0x56, 0x36, 0x00, 0x00}, // ;
-    {0x08, 0x14, 0x22, 0x41, 0x00}, // <
-    {0x14, 0x14, 0x14, 0x14, 0x14}, // =
-    {0x00, 0x41, 0x22, 0x14, 0x08}, // >
-    {0x02, 0x01, 0x51, 0x09, 0x06}, // ?
-    {0x32, 0x49, 0x79, 0x41, 0x3e}, // @
-    {0x7e, 0x11, 0x11, 0x11, 0x7e}, // A (0x41)
-    {0x7f, 0x49, 0x49, 0x49, 0x36}, // B
-    {0x3e, 0x41, 0x41, 0x41, 0x22}, // C
-    {0x7f, 0x41, 0x41, 0x22, 0x1c}, // D
-    {0x7f, 0x49, 0x49, 0x49, 0x41}, // E
-    {0x7f, 0x09, 0x09, 0x09, 0x01}, // F
-    {0x3e, 0x41, 0x49, 0x49, 0x7a}, // G
-    {0x7f, 0x08, 0x08, 0x08, 0x7f}, // H
-    {0x00, 0x41, 0x7f, 0x41, 0x00}, // I
-    {0x20, 0x40, 0x41, 0x3f, 0x01}, // J
-    {0x7f, 0x08, 0x14, 0x22, 0x41}, // K
-    {0x7f, 0x40, 0x40, 0x40, 0x40}, // L
-    {0x7f, 0x02, 0x0c, 0x02, 0x7f}, // M
-    {0x7f, 0x04, 0x08, 0x10, 0x7f}, // N
-    {0x3e, 0x41, 0x41, 0x41, 0x3e}, // O
-    {0x7f, 0x09, 0x09, 0x09, 0x06}, // P
-    {0x3e, 0x41, 0x51, 0x21, 0x5e}, // Q
-    {0x7f, 0x09, 0x19, 0x29, 0x46}, // R
-    {0x46, 0x49, 0x49, 0x49, 0x31}, // S
-    {0x01, 0x01, 0x7f, 0x01, 0x01}, // T
-    {0x3f, 0x40, 0x40, 0x40, 0x3f}, // U
-    {0x1f, 0x20, 0x40, 0x20, 0x1f}, // V
-    {0x3f, 0x40, 0x38, 0x40, 0x3f}, // W
-    {0x63, 0x14, 0x08, 0x14, 0x63}, // X
-    {0x07, 0x08, 0x70, 0x08, 0x07}, // Y
-    {0x61, 0x51, 0x49, 0x45, 0x43}, // Z
-};
 float x_buffer[N] = {0};
 int buffer_index = 0;
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
@@ -136,191 +72,6 @@ float Firfilter(float input)
     }
     buffer_index = (buffer_index + 1) % N;
     return output;
-}
-
-void OLED_WriteCmd(uint8_t cmd)
-{
-    uint8_t buffer[2] = {0x00, cmd};
-    i2c_master_transmit(oled_handle, buffer, 2, -1);
-}
-void OLED_Init()
-{
-    uint8_t init_cmds[] = {
-        0xAE,
-        0x20, 0x00,
-        0xC8,
-        0xA1,
-        0x81, 0xFF,
-        0xAF};
-    for (int i = 0; i < sizeof(init_cmds); i++)
-    {
-        OLED_WriteCmd(init_cmds[i]);
-    }
-}
-void OLED_Clear()
-{
-    memset(oled_buffer, 0, sizeof(oled_buffer));
-}
-void OLED_Update()
-{
-    OLED_WriteCmd(0x21);
-    OLED_WriteCmd(0);
-    OLED_WriteCmd(127);
-    OLED_WriteCmd(0x22);
-    OLED_WriteCmd(0);
-    OLED_WriteCmd(7);
-    uint8_t send_buf[1025];
-    send_buf[0] = 0x40;
-    memcpy(&send_buf[1], oled_buffer, 1024);
-    i2c_master_transmit(oled_handle, send_buf, 1025, -1);
-}
-void OLED_DrawPixel(int x, int y, uint8_t color)
-{
-    if (x < 0 || x >= 128 || y < 0 || y > 63)
-        return;
-    if (color)
-    {
-        oled_buffer[x + (y / 8) * 128] |= (1 << (y % 8));
-    }
-    else
-    {
-        oled_buffer[x + (y / 8) * 128] &= ~(1 << (y % 8));
-    }
-}
-void OLED_DrawChar(int x, int y, char c)
-{
-    if (c < 0x20 || c > 0x5A)
-        return;
-    int font_idx = c - 0x20;
-    for (int col = 0; col < 5; col++)
-    {
-        uint8_t line = font5x7[font_idx][col];
-        for (int row = 0; row < 8; row++)
-        {
-            if (line & (1 << row))
-            {
-                OLED_DrawPixel(x + col, y + row, 1);
-            }
-        }
-    }
-}
-void OLED_DrawString(int x, int y, const char *str)
-{
-    while (*str)
-    {
-        OLED_DrawChar(x, y, *str);
-        x += 6;
-        str++;
-    }
-}
-void OLED_DrawGrid()
-{
-    for (int x = 0; x < 128; x++)
-    {
-        if (x % 2 == 0)
-            OLED_DrawPixel(x, 41, 1);
-    }
-    for (int x = 32; x < 128; x += 32)
-    {
-        for (int y = 20; y < 64; y += 4)
-        {
-            OLED_DrawPixel(x, y, 1);
-        }
-    }
-}
-void OLED_DrawWaveForm()
-{
-    OLED_Clear();
-    OLED_DrawGrid();
-    int offset = 0;
-    float gain = 1.0;
-    uint16_t raw_max = 0;
-    uint16_t raw_min = 4095;
-    for (int i = 0; i < 128; i++)
-    {
-        uint16_t val = adc_val[i * 8];
-        if (val > raw_max)
-            raw_max = val;
-        if (val < raw_min)
-            raw_min = val;
-    }
-    float v_max_volt = (raw_max * 3.3) / 4095.0;
-    float v_min_volt = (raw_min * 3.3) / 4095.0;
-    float v_pp = v_max_volt - v_min_volt;
-
-    char str_vmax[20];
-    char str_vpp[20];
-
-    sprintf(str_vmax, "MAX:%.2fV", v_max_volt);
-    sprintf(str_vpp, "VPP:%.2fV", v_pp);
-
-    OLED_DrawString(0, 0, str_vmax);
-    OLED_DrawString(0, 10, str_vpp);
-
-    for (int x = 0; x < 128; x++)
-    {
-        uint16_t sample = adc_val[x * 8];
-        int y = 63 - (int)((float)sample * gain * 43.0 / 4095.0);
-        if (y < 20)
-            y = 20;
-        if (y > 63)
-            y = 63;
-        OLED_DrawPixel(x, y, 1);
-    }
-    OLED_Update();
-}
-
-void USART_Config()
-{
-    uart_config_t uart_config = {
-        .baud_rate = 115200,
-        .data_bits = UART_DATA_8_BITS,
-        .parity = UART_PARITY_DISABLE,
-        .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-        .rx_flow_ctrl_thresh = 122,
-    };
-    ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM, 17, 16, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
-    QueueHandle_t uart_queue;
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, BUF_SIZE, BUF_SIZE, 10, &uart_queue, 0));
-}
-bool USART_Recieved()
-{
-    uint8_t rx_byte;
-
-    int len = uart_read_bytes(UART_NUM, &rx_byte, 1, 100 / portTICK_PERIOD_MS);
-    if (len > 0 && rx_byte == 0xAA)
-    {
-
-        len = uart_read_bytes(UART_NUM, &rx_byte, 1, 10 / portTICK_PERIOD_MS);
-        if (len > 0 && rx_byte == 0x55)
-        {
-
-            int data_len = uart_read_bytes(UART_NUM, data, 2048, 500 / portTICK_PERIOD_MS);
-            if (data_len == 2048)
-            {
-                int adc_idx = 0;
-                for (int k = 0; k < 2048; k += 2)
-                {
-                    uint8_t high_byte = data[k] & 0x0F;
-                    uint8_t low_byte = data[k + 1];
-                    adc_val[adc_idx] = (high_byte << 8) | low_byte;
-                    adc_idx++;
-                }
-
-                printf("ADC Values: %d -> %d \n", adc_val[0], adc_val[1023]);
-
-                return true;
-            }
-            else
-            {
-                printf("Error: Frame's length: %d\n", data_len);
-            }
-        }
-    }
-
-    return false;
 }
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
