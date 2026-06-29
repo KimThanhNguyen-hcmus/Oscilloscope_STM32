@@ -158,3 +158,41 @@ void TFT_Draw_Oxy()
         TFT_DrawLine(40 + i, 40, 40 + i, 200, COLOR_YELLOW);
     }
 }
+void TFT_DrawChar(int x, int y, char c, uint16_t color, uint16_t bg, uint8_t size)
+{
+    if ((c < 32) || (c > 126))
+        return;
+    uint8_t font_index = c - 32;
+    for (int8_t i = 0; i < 5; i++)
+    {
+        uint8_t line = font5x7[font_index * 5 + i];
+        for (int8_t j = 0; j < 8; j++)
+        {
+            if (line & 0x01)
+            {
+                if (size == 1)
+                    TFT_DrawPixel(x + i, y + j, color);
+                else
+                    TFT_FillRect(x + i * size, y + j * size, size, size, color);
+            }
+            else if (bg != color)
+            {
+                if (size == 1)
+                    TFT_DrawPixel(x + i, y + j, bg);
+                else
+                    TFT_FillRect(x + i * size, y + j * size, size, size, bg);
+            }
+            line >>= 1;
+        }
+    }
+}
+void TFT_DrawString(int x, int y, const char *str, uint16_t color, uint16_t bg, uint8_t size)
+{
+    int current_x = x;
+    while (*str)
+    {
+        TFT_DrawChar(current_x, y, *str, color, bg, size);
+        current_x += (5 * size) + (1 * size);
+        str++;
+    }
+}

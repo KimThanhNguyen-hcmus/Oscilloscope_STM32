@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef TFT_H
+#define TFT_H
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -26,3 +26,6 @@ void TFT_DrawLine(int x0, int y0, int x1, int y1, uint16_t color);
 void TFT_DrawGrid();
 void TFT_FillRect(int x, int y, int w, int h, uint16_t color);
 void TFT_Draw_Oxy();
+void TFT_DrawChar(int x, int y, char c, uint16_t color, uint16_t bg, uint8_t size);
+void TFT_DrawString(int x, int y, const char *str, uint16_t color, uint16_t bg, uint8_t size);
+#endif
