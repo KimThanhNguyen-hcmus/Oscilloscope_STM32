@@ -1,6 +1,6 @@
 #include "tft.h"
 #include "spi.h"
-
+#include "front.h"
 uint16_t old_screen_y[MAX_X];
 int current_logic_x = 0;
 int prev_screen_y = ORIGIN_Y;
@@ -136,14 +136,28 @@ void TFT_DrawFastHLine(int x, int y, int w, uint16_t color)
 }
 void TFT_DrawGrid()
 {
-    uint16_t COLOR_GRID = COLOR_YELLOW;
-    for (int x = 0; x < TFT_WIDTH; x += 40)
+    uint16_t COLOR_GRID = COLOR_WHITE;
+    for (int x = 40; x <= 280; x += 40)
     {
-        TFT_DrawFastVLine(x, 0, TFT_HEIGHT, COLOR_GRID);
+        for (int y = 40; y <= 200; y += 4)
+        {
+            TFT_DrawPixel(x, y, COLOR_GRID);
+            if (y + 1 <= 200)
+            {
+                TFT_DrawPixel(x, y + 1, COLOR_GRID);
+            }
+        }
     }
-    for (int y = 0; y < TFT_HEIGHT; y += 40)
+    for (int y = 40; y <= 200; y += 40)
     {
-        TFT_DrawFastHLine(0, y, TFT_WIDTH, COLOR_GRID);
+        for (int x = 40; x <= 280; x += 4)
+        {
+            TFT_DrawPixel(x, y, COLOR_GRID);
+            if (x + 1 <= 280)
+            {
+                TFT_DrawPixel(x + 1, y, COLOR_GRID);
+            }
+        }
     }
 }
 
@@ -151,11 +165,11 @@ void TFT_Draw_Oxy()
 {
     for (int i = 0; i < 3; i++)
     {
-        TFT_DrawLine(40, 120 + i, 320, 120 + i, COLOR_YELLOW);
+        TFT_DrawLine(40, 119 + i, 280, 119 + i, COLOR_YELLOW);
     }
     for (int i = 0; i < 3; i++)
     {
-        TFT_DrawLine(40 + i, 40, 40 + i, 200, COLOR_YELLOW);
+        TFT_DrawLine(159 + i, 40, 159 + i, 200, COLOR_YELLOW);
     }
 }
 void TFT_DrawChar(int x, int y, char c, uint16_t color, uint16_t bg, uint8_t size)

@@ -89,21 +89,39 @@ void Task_Draw_TFT(void *pvParameters)
                 int clear_x = current_x + 2;
                 if (clear_x < END_X)
                 {
-                    TFT_FillRect(clear_x, TFT_Y_TOP, 4, TFT_Y_BOTTOM - TFT_Y_TOP + 1, COLOR_BLACK);
 
-                    uint16_t COLOR_GRID = COLOR_YELLOW;
-                    for (int grid_y = TFT_Y_TOP; grid_y <= TFT_Y_BOTTOM; grid_y += 40)
+                    TFT_FillRect(clear_x, TFT_Y_TOP, 4, TFT_Y_BOTTOM - TFT_Y_TOP + 1, COLOR_BLACK);
+                    for (int i = 0; i < 4; i++)
                     {
-                        TFT_DrawPixel(clear_x, grid_y, COLOR_GRID);
-                        TFT_DrawPixel(clear_x + 1, grid_y, COLOR_GRID);
-                        TFT_DrawPixel(clear_x + 2, grid_y, COLOR_GRID);
-                        TFT_DrawPixel(clear_x + 3, grid_y, COLOR_GRID);
+                        TFT_DrawPixel(clear_x + i, 119, COLOR_YELLOW);
+                        TFT_DrawPixel(clear_x + i, 120, COLOR_YELLOW);
+                        TFT_DrawPixel(clear_x + i, 121, COLOR_YELLOW);
+                    }
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int check_x = clear_x + i;
+                        if (check_x == 159 || check_x == 160 || check_x == 161)
+                        {
+                            TFT_DrawFastVLine(check_x, TFT_Y_TOP, TFT_Y_BOTTOM - TFT_Y_TOP + 1, COLOR_YELLOW);
+                        }
+                    }
+                    uint16_t COLOR_GRID = COLOR_WHITE;
+                    if ((clear_x % 4) < 2)
+                    {
+                        for (int grid_y = TFT_Y_TOP; grid_y <= TFT_Y_BOTTOM; grid_y += 40)
+                        {
+                            TFT_DrawPixel(clear_x, grid_y, COLOR_GRID);
+                        }
                     }
                     for (int i = 0; i < 4; i++)
                     {
                         if ((clear_x + i) % 40 == 0)
                         {
-                            TFT_DrawFastVLine(clear_x + i, TFT_Y_TOP, TFT_Y_BOTTOM - TFT_Y_TOP + 1, COLOR_GRID);
+                            for (int grid_y = TFT_Y_TOP; grid_y <= TFT_Y_BOTTOM; grid_y += 4)
+                            {
+                                TFT_DrawPixel(clear_x + i, grid_y, COLOR_GRID);
+                                TFT_DrawPixel(clear_x + i, grid_y + 1, COLOR_GRID);
+                            }
                         }
                     }
                 }
@@ -113,7 +131,10 @@ void Task_Draw_TFT(void *pvParameters)
                 }
                 else
                 {
-                    TFT_DrawLine(prev_x, prev_y, current_x, pixel_y, COLOR_GREEN);
+
+                    int y_min = (prev_y < pixel_y) ? prev_y : pixel_y;
+                    int y_max = (prev_y > pixel_y) ? prev_y : pixel_y;
+                    TFT_DrawFastVLine(current_x, y_min, y_max - y_min + 1, COLOR_GREEN);
                 }
 
                 prev_x = current_x;
