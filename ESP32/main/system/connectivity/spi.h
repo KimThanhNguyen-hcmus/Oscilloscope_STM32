@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPI_H
+#define SPI_H
 #include <stdint.h>
 #include <string.h>
 #include "driver/spi_master.h"
@@ -17,3 +18,5 @@ void SPI_Config(void);
 void GPIO_Config(void);
 void TFT_SendData(uint8_t data);
 void TFT_SendCommand(uint8_t cmd);
+
+#endif /*SPI_H*/

@@ -114,6 +114,7 @@ void Task_Draw_TFT(void *pvParameters)
                         }
                     }
                     for (int i = 0; i < 4; i++)
+
                     {
                         if ((clear_x + i) % 40 == 0)
                         {
@@ -127,14 +128,14 @@ void Task_Draw_TFT(void *pvParameters)
                 }
                 if (current_x <= START_X)
                 {
-                    TFT_DrawPixel(current_x, pixel_y, COLOR_GREEN);
+                    TFT_DrawPixel(current_x, pixel_y, COLOR_BLUE);
                 }
                 else
                 {
 
                     int y_min = (prev_y < pixel_y) ? prev_y : pixel_y;
                     int y_max = (prev_y > pixel_y) ? prev_y : pixel_y;
-                    TFT_DrawFastVLine(current_x, y_min, y_max - y_min + 1, COLOR_GREEN);
+                    TFT_DrawFastVLine(current_x, y_min, y_max - y_min + 1, COLOR_BLUE);
                 }
 
                 prev_x = current_x;
@@ -147,6 +148,19 @@ void Task_Draw_TFT(void *pvParameters)
             }
         }
     }
+}
+void TFT_Gui()
+{
+    ESP_LOGI(TAG, "Filling BLACK");
+    TFT_FillScreen(COLOR_BLACK);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    TFT_DrawGrid();
+    TFT_Draw_Oxy();
+    TFT_DrawString(120, 5, "RUNNING", COLOR_WHITE, COLOR_BLACK, 2);
+    TFT_DrawString(10, 210, "VCC:", COLOR_YELLOW, COLOR_BLACK, 1);
+    TFT_DrawString(10, 220, "VDD:", COLOR_YELLOW, COLOR_BLACK, 1);
+    TFT_DrawString(160, 210, "CH1", COLOR_WHITE, COLOR_BLUE, 1);
+    TFT_DrawString(160, 220, "FREQ:", COLOR_YELLOW, COLOR_BLACK, 1);
 }
 void app_main(void)
 {
@@ -174,14 +188,7 @@ void app_main(void)
 
     TFT_SendCommand(0x29); // Display ON
     vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    ESP_LOGI(TAG, "Filling BLACK");
-    TFT_FillScreen(COLOR_BLACK);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    TFT_DrawGrid();
-    TFT_Draw_Oxy();
-
+    TFT_Gui();
     graph_queue = xQueueCreate(10, sizeof(GraphData_t));
     USART_Register_Callback(On_UART_Packet_Received);
 
